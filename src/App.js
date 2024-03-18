@@ -1,25 +1,39 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useState } from "react";
+import Papa from 'papaparse';
+import { initializePlate } from './tools/helperFunctions'
+import SubmissionUploader from './components/SubmissionUploader';
 
-function App() {
+export default function App() {
+
+  const [files, setFiles] = useState();
+
+  function handleChange(event) {
+    setFiles(event.target.files[0]);
+
+    console.log(event.target.files);
+    console.log(event.target.files.length);
+
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      Papa.parse(event.target.files[i], {
+        complete: function (results) {
+          console.log(`File ${i}`, results.data);
+        }
+      });
+    }
+
+
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form>
+        <h1>React File Upload</h1>
+        <input type="file" multiple onChange={handleChange} />
+        <button type="submit">Upload</button>
+      </form>
     </div>
   );
 }
-
-export default App;
