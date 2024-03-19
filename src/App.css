@@ -2,7 +2,7 @@
 
 .App {
   color: black;
-  text-align: center;
+  text-align: left;
   font-family: 'Montserrat';
   min-height: 100vh;
   display: flex;
@@ -45,5 +45,5 @@
   width: 40%;
 }
 .filename {
-  color: black;
+  font-size: 16px;
 }

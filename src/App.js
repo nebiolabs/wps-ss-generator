@@ -2,8 +2,11 @@ import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
-import { initializePlate } from './tools/helperFunctions'
+import { initializePlate, makeSampleSheet } from './tools/helperFunctions'
 import { Input, Form, Button } from 'reactstrap';
+
+// these will be the ones to try first
+const startingLocations = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12'];
 
 export default function App() {
 
@@ -31,21 +34,23 @@ export default function App() {
     }
   }
 
-  function handleClearFiles() {
-    setFiles([])
-  }
+  // function handleClearFiles() {
+  //   setFiles([])
+  // }
 
   function handleMakeSS() {
     console.log(files)
+    makeSampleSheet(files)
+
   }
 
   return (
     <div className="App">
       <div className="uploader flex-start-col">
-        <h2 style={{ color: '#1F618D', fontFamily: 'Montserrat' }}>Load all WPS submissions below</h2>
+        <h3 style={{ color: '#1F618D' }}>Select all WPS submissions below</h3>
         <Input type="file" multiple onChange={handleChange} style={{ margin: '10px 0' }} />
 
-        {files.map(file => <p>{file.name}</p>)}
+        {files.map(file => <p className="filename">{file.name}</p>)}
         {/* <Button color="warning" onClick={handleClearFiles}>clear selections</Button> */}
         <Button color="primary" onClick={handleMakeSS}>make SS</Button>
       </div>
