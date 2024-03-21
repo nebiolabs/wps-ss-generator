@@ -1,16 +1,13 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
-import { initializePlate, makeSampleSheet } from './tools/helperFunctions'
-import { Input, Form, Button } from 'reactstrap';
-
-// these will be the ones to try first
-const startingLocations = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12'];
+import { makeSampleSheet } from './tools/helperFunctions'
+import { Input, Button, Spinner } from 'reactstrap';
 
 export default function App() {
 
   const [files, setFiles] = useState([]);
+  const [showInput, setShowInput] = useState(true);
 
   useEffect(() => {
     console.log(files);
@@ -34,9 +31,13 @@ export default function App() {
     }
   }
 
-  // function handleClearFiles() {
-  //   setFiles([])
-  // }
+  function handleClearFiles() {
+    setFiles([]);
+    setShowInput(false);
+    setTimeout(() => {
+      setShowInput(true);
+    }, 500)
+  }
 
   function handleMakeSS() {
     console.log(files)
@@ -48,11 +49,30 @@ export default function App() {
     <div className="App">
       <div className="uploader flex-start-col">
         <h3 style={{ color: '#1F618D' }}>Select all WPS submissions below</h3>
-        <Input type="file" multiple onChange={handleChange} style={{ margin: '10px 0' }} />
+        {showInput ?
+          <Input type="file" multiple onChange={handleChange} style={{ margin: '10px 0' }} /> :
+          <div className="flex-start-row" style={{ margin: 10 }}><Spinner
+            color="primary"
+            type="grow"
+          >
+          </Spinner>
+            <Spinner
+              color="primary"
+              type="grow"
+            >
+            </Spinner>
+            <Spinner
+              color="primary"
+              type="grow"
+            >
+            </Spinner></div>
+        }
 
         {files.map(file => <p className="filename">{file.name}</p>)}
-        {/* <Button color="warning" onClick={handleClearFiles}>clear selections</Button> */}
-        <Button color="primary" onClick={handleMakeSS}>make SS</Button>
+        <div className="flex-start-row">
+          <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
+          <Button color="primary" onClick={handleMakeSS}>make SS</Button>
+        </div>
       </div>
 
 

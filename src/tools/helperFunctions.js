@@ -1,4 +1,7 @@
 
+// these will be the ones to try first
+const startingLocations = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12'];
+
 function initializePlate() {
   console.log('initializing 96 well plate ... ');
 
@@ -19,18 +22,21 @@ function initializePlate() {
 
     masterPlate.push(masterPlateRow);
   }
+  // console.log(masterPlate);
   return masterPlate;
 }
 
 function extractSamples(submission) {
-  console.log(submission);
+  // toss everything without a sample name
+  let samples = submission.samples.slice(17).filter(el => el[4] !== '');
 
-  let samples = submission.samples.filter((row) => {
-    return row[4] !== '';
+  let samplesInfo = [];
+  // toss the info we don't need
+  samples.forEach((sample) => {
+    let thisSample = sample.slice(1, 10);
+    samplesInfo.push(thisSample)
   });
-
-  // console.log(samples);
-  return samples;
+  return samplesInfo;
 }
 
 function makeSampleSheet(submissions) {
@@ -39,16 +45,44 @@ function makeSampleSheet(submissions) {
   }
 
   console.log('making sample sheet ... ')
-  let newPlateSS = initializePlate();
+  let masterPlate = initializePlate();
+  // console.log(masterPlate)
 
   submissions.forEach((submission) => {
     let samples = extractSamples(submission);
-    samples.forEach((sample) => {
-      newPlateSS.push(sample);
+    console.log(samples)
+    // where does this sample get added? 
+    let startingLocation = 1;
+    for (let i = 1; i < masterPlate.length - 1; i++) {
+      if (masterPlate[i][4] === '') {
+        startingLocation = i;
+        break;
+      }
+    }
+
+    console.log(`startingLocation ${startingLocation}`)
+
+    // grab each sample and insert the info into the masterPlate
+    samples.forEach((sample, i) => {
+      let thisRow = startingLocation + i;
+
+      sample.forEach((info, j) => {
+        masterPlate[thisRow][j] = info;
+      });
+
     });
+
+    //   masterPlate[startingLocation][j + 1] = samples[j];
+
+    console.log(masterPlate)
+
+
+
   });
-  console.log(newPlateSS)
-  return newPlateSS;
+
+
+  // console.log(masterPlate)
+  return masterPlate;
 }
 
 module.exports = {
