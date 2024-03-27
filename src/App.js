@@ -68,7 +68,7 @@ export default function App() {
             </Spinner></div>
         }
 
-        {files.map(file => <p className="filename">{file.name}</p>)}
+        {files.map((file, i) => <p key={i} className="filename">{file.name}</p>)}
         <div className="flex-start-row">
           <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
           <Button color="primary" onClick={handleMakeSS}>make SS</Button>

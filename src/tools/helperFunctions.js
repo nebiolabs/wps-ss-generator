@@ -37,6 +37,55 @@ function extractSamples(submission) {
   return samplesInfo;
 }
 
+// this function should find empty space in the plate compatible with the # of samples.
+// Ex: D5 --> H5 is empty, so can fit <= 5 samples here without jumping to the next empty A well.
+// Note: we don't want the samples loading 
+function findStartingLocation(plate, sampleSize) {
+  let spaceLength = 0;
+  let startingLocation = null;
+
+  if (sampleSize >= 8) {
+    // just use the next A well, skipping any empties
+    for (let i = 1; i < plate.length - 1; i++) {
+      if (plate[i][4] === '' && plate[i][10].includes('A')) {
+        startingLocation = i;
+        console.log(`Adding ${sampleSize} samples @ ${startingLocation}`);
+        break;
+      }
+    }
+
+  } else {
+    // small sample set, see if it fits anywhere
+    console.log(`finding space for ${sampleSize} samples ... `)
+    for (let i = 0; i < plate.length; i++) {
+
+      if (plate[i][4] === '') {
+        // good, this well is empty. keep evaluating
+        console.log(`${plate[i][10]} is empty`);
+        // only assign startingLocation when it is the first empty spot
+        if (spaceLength === 0) {
+          startingLocation = i;
+        }
+        spaceLength++;
+        console.log(`spaceLength: ${spaceLength}, sampleSize: ${sampleSize}`)
+      } else {
+        // bad, this well is occupied. go back to starting values
+        spaceLength = 0;
+        startingLocation = null;
+      }
+
+      // alright, we have enough space 
+      if (spaceLength === sampleSize) {
+        console.log(`Adding ${sampleSize} samples @ ${startingLocation}`);
+        break;
+      }
+    }
+
+  }
+
+  return startingLocation;
+}
+
 // this function just puts all the submissions together, no matter how many. later, separate into 96 well plates.
 function makeSampleSheet(submissions) {
   if (!Array.isArray(submissions)) {
@@ -46,7 +95,7 @@ function makeSampleSheet(submissions) {
   // sort by # of samples first
   submissions.sort((a, b) => b - a);
 
-  console.log('making sample sheet ... ')
+  // console.log('making sample sheet ... ')
   let masterPlate = initializePlate();
   // console.log(masterPlate)
 
@@ -60,17 +109,11 @@ function makeSampleSheet(submissions) {
       return alert(`There isn't enough room for this order: ${submission.name}. Try selecting a different group of orders.`)
     }
 
-    console.log(samples)
-    // where does this sample get added? 
-    let startingLocation = 1;
-    for (let i = 1; i < masterPlate.length - 1; i++) {
-      if (masterPlate[i][4] === '' && masterPlate[i][10].includes('A')) {
-        startingLocation = i;
-        break;
-      }
-    }
+    let startingLocation = findStartingLocation(masterPlate, samples.length);
 
-    console.log(`startingLocation ${startingLocation}`)
+    if (!startingLocation) {
+      return alert(`Could not find a place for this sample set: ${submission.name}`);
+    }
 
     // grab each sample and insert the info into the masterPlate
     samples.forEach((sample, i) => {
@@ -82,52 +125,10 @@ function makeSampleSheet(submissions) {
 
     });
 
-    //   masterPlate[startingLocation][j + 1] = samples[j];
-
-    // console.log(masterPlate)
-
-
-
   });
-
 
   console.log(masterPlate)
   return masterPlate;
-}
-
-// this function should find empty space in the plate compatible with the # of samples.
-// Ex: D5 --> H5 is empty, so can fit <= 5 samples here without jumping to the next empty A well.
-// Note: we don't want the samples loading 
-// should return array of [ startWell, endWell ]
-function findAvailableSpace(plate, samplesLength) {
-  let spaceLength = 0;
-  let startWell = '';
-  let endWell = '';
-
-  for (let i = 0; i < plate.length; i++) {
-
-    if (plate[i][4] === '') {
-      // good, this well is empty. keep evaluating
-
-      //only assign startingWell when it is the first empty spot
-      if (spaceLength === 0) {
-        startWell = plate[i][10];
-      }
-      spaceLength = spaceLength++;
-    } else {
-      // bad, this well is occupied. go back to starting values
-      spaceLength = 0;
-      startWell = '';
-    }
-
-    // alright, we have enough space 
-    if (spaceLength === samplesLength) {
-      endWell = plate[i][10];
-      break;
-    }
-  }
-
-  return [startWell, endWell];
 }
 
 module.exports = {
