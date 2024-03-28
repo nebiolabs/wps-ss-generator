@@ -3,7 +3,7 @@
 const startingLocations = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12'];
 
 function initializePlate() {
-  console.log('initializing 96 well plate ... ');
+  // console.log('initializing 96 well plate ... ');
 
   let headers = ['Total Samples', 'Submitter Name', 'Email', 'Sample #', 'Sample Name', 'Qubit Concentration ng/ul', 'Expected Size (bases)', 'Read Count', 'Vector Backbone (optional)', 'Reference Genome', 'Barcode Well Position', 'Barcode Well #', 'Volume Sample (ul)', 'Volume H2O (ul)'];
 
@@ -61,7 +61,7 @@ function findStartingLocation(plate, sampleSize) {
 
       if (plate[i][4] === '') {
         // good, this well is empty. keep evaluating
-        console.log(`${plate[i][10]} is empty`);
+        // console.log(`${plate[i][10]} is empty`);
         // only assign startingLocation when it is the first empty spot
         if (spaceLength === 0) {
           startingLocation = i;
@@ -93,7 +93,11 @@ function makeSampleSheet(submissions) {
   }
 
   // sort by # of samples first
-  submissions.sort((a, b) => b - a);
+  submissions.sort((a, b) => {
+    let aSize = extractSamples(a).length;
+    let bSize = extractSamples(b).length;
+    return bSize - aSize;
+  });
 
   // console.log('making sample sheet ... ')
   let masterPlate = initializePlate();
@@ -104,7 +108,7 @@ function makeSampleSheet(submissions) {
 
     // is there room for this one?
     let spaceLeft = masterPlate.filter((row) => row[4] === '').length;
-    console.log(`${spaceLeft} wells left ... checking for room`)
+    // console.log(`${spaceLeft} wells left ... checking for room`)
     if (spaceLeft - samples.length < 0) {
       return alert(`There isn't enough room for this order: ${submission.name}. Try selecting a different group of orders.`)
     }
@@ -128,6 +132,7 @@ function makeSampleSheet(submissions) {
   });
 
   console.log(masterPlate)
+
   return masterPlate;
 }
 
