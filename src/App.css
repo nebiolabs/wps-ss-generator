@@ -41,9 +41,19 @@
   justify-content: flex-start;
 }
 
-.uploader {
-  width: 40%;
-}
 .filename {
   font-size: 16px;
+}
+
+.download-button {
+  height: 38px;
+  font-size: 16px;
+  color: white;
+  background-color: rgb(31, 134, 160);
+  border-radius: 5px;
+}
+
+button {
+  margin-right: 6px;
+  border: none;
 }

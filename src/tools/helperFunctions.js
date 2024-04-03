@@ -2,6 +2,26 @@
 // these will be the ones to try first
 const startingLocations = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12'];
 
+// this will calculate the sample and water volume for each sample based on the quant
+function determineVolumes(quantStr) {
+  let volumes = [5, 5]; //use this as a default
+  let quant = quantStr.replace(/[^\d.]+/g, "");
+
+  if (quant > 80) {
+    volumes = [1, 9];
+  } else if (quant > 50) {
+    volumes = [2, 8];
+  } else if (quant > 30) {
+    volumes = [3, 7];
+  } else if (quant > 15) {
+    volumes = [5, 5];
+  } else {
+    volumes = [10, 0];
+  }
+  return volumes;
+}
+
+
 function initializePlate() {
   // console.log('initializing 96 well plate ... ');
 
@@ -31,7 +51,7 @@ function extractSamples(submission) {
   let samplesInfo = [];
   // toss the info we don't need
   samples.forEach((sample) => {
-    let thisSample = sample.slice(1, 10);
+    let thisSample = sample.slice(0, 10);
     samplesInfo.push(thisSample)
   });
   return samplesInfo;
@@ -56,7 +76,7 @@ function findStartingLocation(plate, sampleSize) {
 
   } else {
     // small sample set, see if it fits anywhere
-    console.log(`finding space for ${sampleSize} samples ... `)
+    // console.log(`finding space for ${sampleSize} samples ... `)
     for (let i = 0; i < plate.length; i++) {
 
       if (plate[i][4] === '') {
@@ -67,7 +87,7 @@ function findStartingLocation(plate, sampleSize) {
           startingLocation = i;
         }
         spaceLength++;
-        console.log(`spaceLength: ${spaceLength}, sampleSize: ${sampleSize}`)
+        // console.log(`spaceLength: ${spaceLength}, sampleSize: ${sampleSize}`)
       } else {
         // bad, this well is occupied. go back to starting values
         spaceLength = 0;
@@ -131,7 +151,18 @@ function makeSampleSheet(submissions) {
 
   });
 
-  console.log(masterPlate)
+  masterPlate.forEach((sample, i) => {
+    sample[0] = i > 0 ? i : '';
+    let volumes = determineVolumes(sample[5]);
+    sample[12] = volumes[0];
+    sample[13] = volumes[1];
+
+    sample[4] != '' && console.log(sample)
+
+
+  })
+
+  // console.log(masterPlate)
 
   return masterPlate;
 }

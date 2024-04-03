@@ -48,7 +48,6 @@ export default function CSVUploader(props) {
       {({
         getRootProps,
         acceptedFile,
-        ProgressBar,
         getRemoveFileProps,
       }) => (
         <>
@@ -63,7 +62,6 @@ export default function CSVUploader(props) {
               Remove
             </Button>
           </div>
-          {/* <ProgressBar style={styles.progressBarBackgroundColor} /> */}
         </>
 
       )}

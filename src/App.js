@@ -3,11 +3,13 @@ import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import { makeSampleSheet } from './tools/helperFunctions'
 import { Input, Button, Spinner } from 'reactstrap';
+import CSVDownloader from './components/CsvDownloader';
 
 export default function App() {
 
   const [files, setFiles] = useState([]);
   const [showInput, setShowInput] = useState(true);
+  const [sampleSheet, setSampleSheet] = useState(null);
 
   useEffect(() => {
     console.log(files);
@@ -41,8 +43,8 @@ export default function App() {
 
   function handleMakeSS() {
     console.log(files)
-    makeSampleSheet(files)
-
+    let sampleSheet = makeSampleSheet(files)
+    return setSampleSheet(sampleSheet);
   }
 
   return (
@@ -72,6 +74,7 @@ export default function App() {
         <div className="flex-start-row">
           <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
           <Button color="primary" onClick={handleMakeSS}>make SS</Button>
+          <CSVDownloader></CSVDownloader>
         </div>
       </div>
 
