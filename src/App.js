@@ -9,11 +9,13 @@ export default function App() {
 
   const [files, setFiles] = useState([]);
   const [showInput, setShowInput] = useState(true);
-  const [sampleSheet, setSampleSheet] = useState(null);
+  const [sampleSheet, setSampleSheet] = useState([]);
 
   useEffect(() => {
     console.log(files);
-  }, [files]);
+    console.log(sampleSheet);
+
+  }, [files], [sampleSheet]);
 
   function handleChange(event) {
     let uploadedFiles = [];
@@ -35,6 +37,7 @@ export default function App() {
 
   function handleClearFiles() {
     setFiles([]);
+    setSampleSheet([]);
     setShowInput(false);
     setTimeout(() => {
       setShowInput(true);
@@ -43,8 +46,9 @@ export default function App() {
 
   function handleMakeSS() {
     console.log(files)
-    let sampleSheet = makeSampleSheet(files)
-    return setSampleSheet(sampleSheet);
+    let sampleSheet = makeSampleSheet(files);
+    console.log(sampleSheet)
+    setSampleSheet(sampleSheet);
   }
 
   return (
@@ -74,8 +78,14 @@ export default function App() {
         <div className="flex-start-row">
           <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
           <Button color="primary" onClick={handleMakeSS}>make SS</Button>
-          <CSVDownloader></CSVDownloader>
+          <CSVDownloader
+            class="download-button"
+            message={`Sample Sheet CSV`}
+            fileName={`WPS_sample_sheet`}
+            data={sampleSheet}>
+          </CSVDownloader>
         </div>
+        {sampleSheet.length > 0 ? <p>combined {sampleSheet.length - 1} samples</p> : null}
       </div>
 
 

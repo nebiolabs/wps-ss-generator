@@ -157,7 +157,7 @@ function makeSampleSheet(submissions) {
     sample[12] = volumes[0];
     sample[13] = volumes[1];
 
-    sample[4] != '' && console.log(sample)
+    // sample[4] != '' && console.log(sample)
 
 
   })
