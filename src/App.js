@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
-import { makeSampleSheet } from './tools/helperFunctions'
+import { makeSampleSheets } from './tools/helperFunctions'
 import { Input, Button, Spinner } from 'reactstrap';
 import CSVDownloader from './components/CsvDownloader';
 
@@ -46,7 +46,7 @@ export default function App() {
 
   function handleMakeSS() {
     console.log(files)
-    let sampleSheet = makeSampleSheet(files);
+    let sampleSheet = makeSampleSheets(files);
     console.log(sampleSheet)
     setSampleSheet(sampleSheet);
   }
@@ -85,7 +85,7 @@ export default function App() {
             data={sampleSheet}>
           </CSVDownloader>
         </div>
-        {sampleSheet.length > 0 ? <p>combined {sampleSheet.length - 1} samples</p> : null}
+        {sampleSheet.length > 0 ? <p style={{ color: '#1F618D', fontSize: 22 }}>combined samples into {sampleSheet.length} flow cells</p> : null}
       </div>
 
 

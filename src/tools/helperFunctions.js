@@ -22,7 +22,7 @@ function determineVolumes(quantStr) {
 }
 
 
-function initializePlate() {
+function initializeFlowCell() {
   // console.log('initializing 96 well plate ... ');
 
   let headers = ['Total Samples', 'Submitter Name', 'Email', 'Sample #', 'Sample Name', 'Qubit Concentration ng/ul', 'Expected Size (bases)', 'Read Count', 'Vector Backbone (optional)', 'Reference Genome', 'Barcode Well Position', 'Barcode Well #', 'Volume Sample (ul)', 'Volume H2O (ul)'];
@@ -47,14 +47,16 @@ function initializePlate() {
 function extractSamples(submission) {
   // toss everything without a sample name
   let samples = submission.samples.slice(17).filter(el => el[4] !== '');
-
+  console.log(samples)
   let samplesInfo = [];
   // toss the info we don't need
   samples.forEach((sample) => {
     let thisSample = sample.slice(0, 10);
     samplesInfo.push(thisSample)
   });
-  return samplesInfo;
+
+  // somehow an empty row gets added ... sometimes? filter it out to be sure
+  return samplesInfo.filter(sample => sample.length > 1);
 }
 
 // this function should find empty space in the plate compatible with the # of samples.
@@ -106,8 +108,26 @@ function findStartingLocation(plate, sampleSize) {
   return startingLocation;
 }
 
+// ######## Notes for handling multiple sample sheets ###########
+
+// start with 5 initialized SS, as above
+// loop through the submissions
+// loop through the sample sheets, moving to the next if there is no room, etc.
+// add when a spot is found
+// return array of sample sheets, filtering out the empty ones.
+
+// ########   
+
 // this function just puts all the submissions together, no matter how many. later, separate into 96 well plates.
-function makeSampleSheet(submissions) {
+function makeSampleSheets(submissions) {
+  // set up for a maximum of 5 SS, the limit of the GridIon
+  let allSampleSheets = [];
+  for (let i = 0; i < 5; i++) {
+    let plate = initializeFlowCell();
+    allSampleSheets.push(plate);
+  }
+  console.log(allSampleSheets)
+
   if (!Array.isArray(submissions)) {
     return;
   }
@@ -119,55 +139,88 @@ function makeSampleSheet(submissions) {
     return bSize - aSize;
   });
 
-  // console.log('making sample sheet ... ')
-  let masterPlate = initializePlate();
-  // console.log(masterPlate)
-
   submissions.forEach((submission) => {
     let samples = extractSamples(submission);
 
-    // is there room for this one?
-    let spaceLeft = masterPlate.filter((row) => row[4] === '').length;
-    // console.log(`${spaceLeft} wells left ... checking for room`)
-    if (spaceLeft - samples.length < 0) {
-      return alert(`There isn't enough room for this order: ${submission.name}. Try selecting a different group of orders.`)
-    }
+    for (let i = 0; i < allSampleSheets.length; i++) {
+      console.log(`looking for space for ${samples.length} samples on flow cell #${i + 1}`);
+      let currentFlowCell = allSampleSheets[i];
 
-    let startingLocation = findStartingLocation(masterPlate, samples.length);
+      // is there room for these samples on this flow cell?
+      let spaceLeft = currentFlowCell.filter((row) => row[4] === '').length;
+      if (spaceLeft - samples.length < 0) {
+        if (i === 4) {
+          return alert(`There aren't enough empty wells remaining on any flow cells for ${submission.name}`);
+        } else {
+          continue;
+        }
+      }
 
-    if (!startingLocation) {
-      return alert(`Could not find a place for this sample set: ${submission.name}`);
-    }
+      let startingLocation = findStartingLocation(currentFlowCell, samples.length);
 
-    // grab each sample and insert the info into the masterPlate
-    samples.forEach((sample, i) => {
-      let thisRow = startingLocation + i;
+      // couldn't find a place for this sample set - return alert if it's the last flow cell, continue if not
+      if (!startingLocation) {
+        if (i === 4) {
+          return alert(`Could not find a place on any flow cells for this sample set: ${submission.name}`);
+        } else {
+          continue;
+        }
+      }
 
-      sample.forEach((info, j) => {
-        masterPlate[thisRow][j] = info;
+      // grab each sample and insert the needed info 
+      samples.forEach((sample, j) => {
+        // console.log(sample)
+        // add the sample and H20 volumes
+        sample[0] = j > 0 ? j : '';
+        let volumes = determineVolumes(sample[5]);
+        sample[12] = volumes[0];
+        sample[13] = volumes[1];
+
+        let thisRow = startingLocation + j;
+        sample.forEach((info, k) => {
+          currentFlowCell[thisRow][k] = info;
+        });
+
+
       });
 
-    });
+      break;
+
+    }
+
+
+
+    // // is there room for this one?
+    // let spaceLeft = currentFlowCell.filter((row) => row[4] === '').length;
+    // // console.log(`${spaceLeft} wells left ... checking for room`)
+    // if (spaceLeft - samples.length < 0) {
+    //   return alert(`There isn't enough room for this order: ${submission.name}. Try selecting a different group of orders.`)
+    // }
+
+    // let startingLocation = findStartingLocation(currentFlowCell, samples.length);
+
+    // if (!startingLocation) {
+    //   return alert(`Could not find a place for this sample set: ${submission.name}`);
+    // }
+
+    // // grab each sample and insert the needed info into the currentFlowCell
+    // samples.forEach((sample, i) => {
+    //   let thisRow = startingLocation + i;
+
+    //   sample.forEach((info, j) => {
+    //     currentFlowCell[thisRow][j] = info;
+    //   });
+
+    // });
 
   });
 
-  masterPlate.forEach((sample, i) => {
-    sample[0] = i > 0 ? i : '';
-    let volumes = determineVolumes(sample[5]);
-    sample[12] = volumes[0];
-    sample[13] = volumes[1];
-
-    // sample[4] != '' && console.log(sample)
 
 
-  })
-
-  // console.log(masterPlate)
-
-  return masterPlate;
+  return allSampleSheets;
 }
 
 module.exports = {
-  initializePlate,
-  makeSampleSheet
+  initializeFlowCell,
+  makeSampleSheets
 }
