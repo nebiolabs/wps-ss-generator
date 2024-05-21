@@ -188,34 +188,11 @@ function makeSampleSheets(submissions) {
 
     }
 
-
-
-    // // is there room for this one?
-    // let spaceLeft = currentFlowCell.filter((row) => row[4] === '').length;
-    // // console.log(`${spaceLeft} wells left ... checking for room`)
-    // if (spaceLeft - samples.length < 0) {
-    //   return alert(`There isn't enough room for this order: ${submission.name}. Try selecting a different group of orders.`)
-    // }
-
-    // let startingLocation = findStartingLocation(currentFlowCell, samples.length);
-
-    // if (!startingLocation) {
-    //   return alert(`Could not find a place for this sample set: ${submission.name}`);
-    // }
-
-    // // grab each sample and insert the needed info into the currentFlowCell
-    // samples.forEach((sample, i) => {
-    //   let thisRow = startingLocation + i;
-
-    //   sample.forEach((info, j) => {
-    //     currentFlowCell[thisRow][j] = info;
-    //   });
-
-    // });
-
   });
 
-
+  allSampleSheets.filter(sampleSheet => {
+    return sampleSheet.slice(1).filter(el => el[4] !== '').length > 0;
+  });
 
   return allSampleSheets;
 }

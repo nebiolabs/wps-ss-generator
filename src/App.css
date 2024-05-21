@@ -10,7 +10,14 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  /* color: white; */
+  background-image: url('https://static.vecteezy.com/system/resources/previews/012/594/205/non_2x/dna-double-helix-with-sequencing-bands-illustration-background-vector.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.uploader {
+  padding: 300px;
+  background-color: rgba(255,255,255, 0.95);
+  border-radius: 10px;
 }
 .flex-center-col {
   display: flex;

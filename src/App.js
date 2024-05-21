@@ -4,7 +4,8 @@ import Papa from 'papaparse';
 import { makeSampleSheets } from './tools/helperFunctions'
 import { Input, Button, Spinner } from 'reactstrap';
 import CSVDownloader from './components/CsvDownloader';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 export default function App() {
 
   const [files, setFiles] = useState([]);
@@ -54,6 +55,7 @@ export default function App() {
   return (
     <div className="App">
       <div className="uploader flex-start-col">
+
         <h3 style={{ color: '#1F618D' }}>Select all WPS submissions below</h3>
         {showInput ?
           <Input type="file" multiple onChange={handleChange} style={{ margin: '10px 0' }} /> :
@@ -75,17 +77,26 @@ export default function App() {
         }
 
         {files.map((file, i) => <p key={i} className="filename">{file.name}</p>)}
+
+        {sampleSheet.length > 0 ? <p style={{ color: '#1F618D', fontSize: 22 }}>combined samples into {sampleSheet.length} flow cells</p> : null}
         <div className="flex-start-row">
           <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
           <Button color="primary" onClick={handleMakeSS}>make SS</Button>
-          <CSVDownloader
-            class="download-button"
-            message={`Sample Sheet CSV`}
-            fileName={`WPS_sample_sheet`}
-            data={sampleSheet}>
-          </CSVDownloader>
+
         </div>
-        {sampleSheet.length > 0 ? <p style={{ color: '#1F618D', fontSize: 22 }}>combined samples into {sampleSheet.length} flow cells</p> : null}
+        <div>
+          {sampleSheet.map((flowCell, i) => {
+            return (
+              <CSVDownloader
+                key={i}
+                class="download-button"
+                message={<span>{`flow cell ${i + 1}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
+                fileName={`WPS_sample_sheet`}
+                data={flowCell}>
+              </CSVDownloader>
+            )
+          })}
+        </div>
       </div>
 
 
