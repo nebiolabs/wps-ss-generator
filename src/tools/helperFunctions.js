@@ -25,10 +25,11 @@ function determineVolumes(quantStr) {
 function initializeFlowCell() {
   // console.log('initializing 96 well plate ... ');
 
-  let headers = ['Total Samples', 'Submitter Name', 'Email', 'Sample #', 'Sample Name', 'Qubit Concentration ng/ul', 'Expected Size (bases)', 'Read Count', 'Vector Backbone (optional)', 'Reference Genome', 'Barcode Well Position', 'Barcode Well #', 'Volume Sample (ul)', 'Volume H2O (ul)'];
+  let headers = [['Date Sequenced', ''], ['Flow Cell', ''], ['Available Pores on Flow Cell', ''], ['New or Washed?', ''], ['', ''], ['Total Samples', 'Submitter Name', 'Email', 'Sample #', 'Sample Name', 'Qubit Concentration ng/ul', 'Expected Size (bases)', 'Read Count', 'Vector Backbone (optional)', 'Reference Genome', 'Barcode Well Position', 'Barcode Well #', 'Volume Sample (ul)', 'Volume H2O (ul)']];
 
   let rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-  let masterPlate = [headers];
+  let masterPlate = [];
+  headers.forEach(header => masterPlate.push(header));
 
   // set up the scaffold of 96 rows
   for (let i = 0; i < 96; i++) {

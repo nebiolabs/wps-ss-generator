@@ -56,7 +56,7 @@ export default function App() {
     <div className="App">
       <div className="uploader flex-start-col">
 
-        <h3 style={{ color: '#1F618D' }}>Select all WPS submissions below</h3>
+        <h3 style={{ color: '#1F618D' }}>Select WPS submissions below</h3>
         {showInput ?
           <Input type="file" multiple onChange={handleChange} style={{ margin: '10px 0' }} /> :
           <div className="flex-start-row" style={{ margin: 10 }}><Spinner
@@ -82,19 +82,32 @@ export default function App() {
         <div className="flex-start-row">
           <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
           <Button color="primary" onClick={handleMakeSS}>make SS</Button>
-
         </div>
         <div>
           {sampleSheet.map((flowCell, i) => {
-            return (
-              <CSVDownloader
-                key={i}
-                class="download-button"
-                message={<span>{`flow cell ${i + 1}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
-                fileName={`WPS_sample_sheet`}
-                data={flowCell}>
-              </CSVDownloader>
-            )
+            // only show the ones that have samples
+            let hasSamples = false;
+            flowCell.slice(6).map((sample, i) => {
+              console.log(i)
+              console.log(sample)
+              if (sample[4] !== '') {
+                hasSamples = true;
+              }
+            });
+
+            if (hasSamples) {
+              return (
+                <CSVDownloader
+                  key={i}
+                  class="download-button"
+                  message={<span>{`flow cell ${i + 1}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
+                  fileName={`Flow Cell ${i + 1}`}
+                  data={flowCell}>
+                </CSVDownloader>
+              )
+            } else {
+              return null;
+            }
           })}
         </div>
       </div>
