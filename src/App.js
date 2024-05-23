@@ -80,8 +80,8 @@ export default function App() {
 
         {sampleSheet.length > 0 ? <p style={{ color: '#1F618D', fontSize: 22 }}>combined samples into {sampleSheet.length} flow cells</p> : null}
         <div className="flex-start-row">
-          <Button color="warning" onClick={handleClearFiles}>clear selections</Button>
-          <Button color="primary" onClick={handleMakeSS}>make SS</Button>
+          <Button outline onClick={handleClearFiles}>clear selections</Button>
+          <Button outline onClick={handleMakeSS}>make SS</Button>
         </div>
         <div>
           {sampleSheet.map((flowCell, i) => {

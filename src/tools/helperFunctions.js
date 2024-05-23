@@ -172,12 +172,16 @@ function makeSampleSheets(submissions) {
       samples.forEach((sample, j) => {
         // console.log(sample)
         // add the sample and H20 volumes
-        sample[0] = j > 0 ? j : '';
+        let thisRow = startingLocation + j;
+        sample[0] = startingLocation - 5 + j;
+        [8, 9].forEach((num) => {
+          if (sample[num] === '') { sample[num] = '?' }
+        });
+
         let volumes = determineVolumes(sample[5]);
         sample[12] = volumes[0];
         sample[13] = volumes[1];
 
-        let thisRow = startingLocation + j;
         sample.forEach((info, k) => {
           currentFlowCell[thisRow][k] = info;
         });
