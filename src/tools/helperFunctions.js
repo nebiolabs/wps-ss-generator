@@ -202,7 +202,44 @@ function makeSampleSheets(submissions) {
   return allSampleSheets;
 }
 
+function sum(arr) {
+  let total = 0;
+
+  arr.forEach((entry) => {
+    let sampleNos = entry["Samples"];
+    if (Number.isInteger(sampleNos)) {
+      total += sampleNos;
+    } else if (typeof (sampleNos) === 'string') {
+      let parsedSampleNos = sampleNos.split(',').map(num => Number(num));
+      parsedSampleNos.forEach((sample) => {
+        if (Number.isInteger(sample)) {
+          total += sample;
+        }
+      });
+    }
+    console.log(total)
+
+  });
+  return total;
+}
+
+function getDateString() {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  if (month < 10) {
+    month = '0' + month;
+  }
+  if (day < 10) {
+    day = '0' + day;
+  }
+
+  return `${year}_${month}_${day}`;
+}
+
 module.exports = {
   initializeFlowCell,
-  makeSampleSheets
+  makeSampleSheets,
+  getDateString
 }

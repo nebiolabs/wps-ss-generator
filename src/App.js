@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
-import { makeSampleSheets } from './tools/helperFunctions'
+import { makeSampleSheets, getDateString } from './tools/helperFunctions'
 import { Input, Button, Spinner } from 'reactstrap';
 import CSVDownloader from './components/CsvDownloader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -88,8 +88,6 @@ export default function App() {
             // only show the ones that have samples
             let hasSamples = false;
             flowCell.slice(6).map((sample, i) => {
-              console.log(i)
-              console.log(sample)
               if (sample[4] !== '') {
                 hasSamples = true;
               }
@@ -100,7 +98,7 @@ export default function App() {
                 <CSVDownloader
                   key={i}
                   class="download-button"
-                  message={<span>{`flow cell ${i + 1}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
+                  message={<span>{`flow cell ${i + 1}_${getDateString()}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
                   fileName={`Flow Cell ${i + 1}`}
                   data={flowCell}>
                 </CSVDownloader>
