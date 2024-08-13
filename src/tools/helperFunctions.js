@@ -37,7 +37,7 @@ function initializeFlowCell() {
     let plateCol = Math.floor(i / 8) + 1;
     let plateRow = rows[i % 8];
     masterPlateRow[0] = i + 1;
-    masterPlateRow[7] = '10000';
+    masterPlateRow[7] = '10000'; // add this for all samples! right now it is missing sometimes
     masterPlateRow[10] = `${plateRow}${plateCol}`;
     masterPlate.push(masterPlateRow);
   }
@@ -48,7 +48,6 @@ function initializeFlowCell() {
 function extractSamples(submission) {
   // toss everything without a sample name
   let samples = submission.samples.slice(17).filter(el => el[4] !== '');
-  console.log(samples)
   let samplesInfo = [];
   // toss the info we don't need
   samples.forEach((sample) => {
@@ -62,12 +61,11 @@ function extractSamples(submission) {
 
 // this function should find empty space in the plate compatible with the # of samples.
 // Ex: D5 --> H5 is empty, so can fit <= 5 samples here without jumping to the next empty A well.
-// Note: we don't want the samples loading 
 function findStartingLocation(plate, sampleSize) {
   let spaceLength = 0;
   let startingLocation = null;
 
-  if (sampleSize >= 8) {
+  if (sampleSize >= 4) {
     // just use the next A well, skipping any empties
     for (let i = 1; i < plate.length - 1; i++) {
       if (plate[i][4] === '' && plate[i][10].includes('A')) {
@@ -127,7 +125,6 @@ function makeSampleSheets(submissions) {
     let plate = initializeFlowCell();
     allSampleSheets.push(plate);
   }
-  console.log(allSampleSheets)
 
   if (!Array.isArray(submissions)) {
     return;
@@ -147,8 +144,13 @@ function makeSampleSheets(submissions) {
       console.log(`looking for space for ${samples.length} samples on flow cell #${i + 1}`);
       let currentFlowCell = allSampleSheets[i];
 
+      let startingLocation = findStartingLocation(currentFlowCell, samples.length);
+      console.log(`startingLocation: ${startingLocation}`);
+
       // is there room for these samples on this flow cell?
       let spaceLeft = currentFlowCell.filter((row) => row[4] === '').length;
+      console.log(`There are ${spaceLeft} wells left on flow cell #${i + 1}`)
+
       if (spaceLeft - samples.length < 0) {
         if (i === 4) {
           return alert(`There aren't enough empty wells remaining on any flow cells for ${submission.name}`);
@@ -156,8 +158,6 @@ function makeSampleSheets(submissions) {
           continue;
         }
       }
-
-      let startingLocation = findStartingLocation(currentFlowCell, samples.length);
 
       // couldn't find a place for this sample set - return alert if it's the last flow cell, continue if not
       if (!startingLocation) {
@@ -181,7 +181,6 @@ function makeSampleSheets(submissions) {
         let volumes = determineVolumes(sample[5]);
         sample[12] = volumes[0];
         sample[13] = volumes[1];
-
         sample.forEach((info, k) => {
           currentFlowCell[thisRow][k] = info;
         });

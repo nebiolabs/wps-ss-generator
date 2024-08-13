@@ -13,8 +13,8 @@ export default function App() {
   const [sampleSheet, setSampleSheet] = useState([]);
 
   useEffect(() => {
-    console.log(files);
-    console.log(sampleSheet);
+    // console.log(files);
+    // console.log(sampleSheet);
 
   }, [files], [sampleSheet]);
 
@@ -46,7 +46,6 @@ export default function App() {
   }
 
   function handleMakeSS() {
-    console.log(files)
     let sampleSheet = makeSampleSheets(files);
     console.log(sampleSheet)
     setSampleSheet(sampleSheet);
@@ -98,8 +97,8 @@ export default function App() {
                 <CSVDownloader
                   key={i}
                   class="download-button"
-                  message={<span>{`flow cell ${i + 1}_${getDateString()}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
-                  fileName={`Flow Cell ${i + 1}`}
+                  message={<span>{`Flow cell ${i + 1}`}<FontAwesomeIcon style={{ marginLeft: 4 }} icon={faDownload} /></span>}
+                  fileName={`flowcell${i + 1}_${getDateString()}`}
                   data={flowCell}>
                 </CSVDownloader>
               )
