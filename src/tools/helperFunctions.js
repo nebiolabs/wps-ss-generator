@@ -69,8 +69,9 @@ function findStartingLocation(plate, sampleSize) {
     // just use the next A well, skipping any empties
     for (let i = 1; i < plate.length - 1; i++) {
       if (plate[i][4] === '' && plate[i][10].includes('A')) {
+        console.log(`findStartingLocation says there is room for ${sampleSize} @${i}`)
         startingLocation = i;
-        console.log(`Adding ${sampleSize} samples @ ${startingLocation}`);
+        console.log(`Trying to add ${sampleSize} samples @ ${startingLocation}`);
         break;
       }
     }
@@ -97,7 +98,7 @@ function findStartingLocation(plate, sampleSize) {
 
       // alright, we have enough space 
       if (spaceLength === sampleSize) {
-        console.log(`Adding ${sampleSize} samples @ ${startingLocation}`);
+        console.log(`Trying to add ${sampleSize} samples @ ${startingLocation}`);
         break;
       }
     }
@@ -141,15 +142,14 @@ function makeSampleSheets(submissions) {
     let samples = extractSamples(submission);
 
     for (let i = 0; i < allSampleSheets.length; i++) {
-      console.log(`looking for space for ${samples.length} samples on flow cell #${i + 1}`);
+
       let currentFlowCell = allSampleSheets[i];
+      // console.log(`looking for space for ${samples.length} samples on flow cell #${i + 1}`);
 
       let startingLocation = findStartingLocation(currentFlowCell, samples.length);
-      console.log(`startingLocation: ${startingLocation}`);
-
       // is there room for these samples on this flow cell?
-      let spaceLeft = currentFlowCell.filter((row) => row[4] === '').length;
-      console.log(`There are ${spaceLeft} wells left on flow cell #${i + 1}`)
+      let emptyWells = currentFlowCell.slice(startingLocation).filter((row) => row[4] === '');
+      let spaceLeft = emptyWells.length;
 
       if (spaceLeft - samples.length < 0) {
         if (i === 4) {
