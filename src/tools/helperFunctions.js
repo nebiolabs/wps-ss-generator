@@ -31,13 +31,12 @@ function initializeFlowCell() {
   let masterPlate = [];
   headers.forEach(header => masterPlate.push(header));
 
-  // set up the scaffold of 96 rows
+  // set up the scaffold of 96 rows with defaults
   for (let i = 0; i < 96; i++) {
     let masterPlateRow = Array(headers.length).fill('');
     let plateCol = Math.floor(i / 8) + 1;
     let plateRow = rows[i % 8];
     masterPlateRow[0] = i + 1;
-    masterPlateRow[7] = '10000'; // add this for all samples! right now it is missing sometimes
     masterPlateRow[10] = `${plateRow}${plateCol}`;
     masterPlate.push(masterPlateRow);
   }
@@ -168,21 +167,39 @@ function makeSampleSheets(submissions) {
         }
       }
 
+      // sometimes users only put their name and email in the first sample, so uses that as a default
+      let defaultUser = samples[0][1];
+      if (defaultUser === '') {defaultUser = 'name missing'};
+      let defaultEmail = samples[0][2];
+      if (defaultEmail === '') {defaultEmail = 'email missing'};
+      // console.log(defaultEmail, defaultUser)
+      let defaults = [
+        '', defaultUser, defaultEmail, '', '', '', '5555', '10000', 'unknown', '?', '', '', '', ''
+      ]
+      console.log(defaults)
+
       // grab each sample and insert the needed info 
       samples.forEach((sample, j) => {
-        // console.log(sample)
-        // add the sample and H20 volumes
-        let thisRow = startingLocation + j;
-        sample[0] = startingLocation - 5 + j;
-        [8, 9].forEach((num) => {
-          if (sample[num] === '') { sample[num] = '?' }
-        });
+        console.log(`adding sample ${j}`)
 
+        let thisRow = startingLocation + j;
+        sample[0] = startingLocation - 5 + j;      
+
+        // add the sample and H20 volumes
         let volumes = determineVolumes(sample[5]);
         sample[12] = volumes[0];
         sample[13] = volumes[1];
+
+        // and now add all the info to the actual flow cell
+        // add default info where it is missing
         sample.forEach((info, k) => {
-          currentFlowCell[thisRow][k] = info;
+          
+          if (info === '') {
+            console.log(`missing info: defaulting to ${defaults[k]}`)
+            currentFlowCell[thisRow][k] = defaults[k];
+          } else {
+            currentFlowCell[thisRow][k] = info;
+          }
         });
 
 
