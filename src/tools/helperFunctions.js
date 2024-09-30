@@ -13,7 +13,7 @@ function determineVolumes(quantStr) {
     volumes = [2, 8];
   } else if (quant > 30) {
     volumes = [3, 7];
-  } else if (quant > 15) {
+  } else if (quant >= 15) {
     volumes = [5, 5];
   } else {
     volumes = [10, 0];
@@ -64,7 +64,7 @@ function findStartingLocation(plate, sampleSize) {
   let spaceLength = 0;
   let startingLocation = null;
 
-  if (sampleSize >= 4) {
+  if (sampleSize >= 6) {
     // just use the next A well, skipping any empties
     for (let i = 1; i < plate.length - 1; i++) {
       if (plate[i][4] === '' && plate[i][10].includes('A')) {
